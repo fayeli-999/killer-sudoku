@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Killer Sudoku - iPad Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="left-panel">
+            <div id="sudoku-board"></div>
+        </div>
+
+        <div id="right-panel">
+            <div class="division" id="combination-area">
+                <h3 class="div-title">Combinations</h3>
+                <div id="combo-buttons-container">
+                    <div class="placeholder"></div>
+                </div>
+            </div>
+
+<div class="division" id="menu-area">
+    <div id="timer">00:00</div>
+    <div class="menu-buttons">
+        <button id="undo-btn">Undo</button>
+        <button id="restart-btn">Restart</button> 
+        <button id="check-btn">Check</button> 
+        <button id="new-puzzle-btn" class="primary" onclick="location.reload()">New Game</button>
+    </div>
+</div>
+
+            <div class="division" id="keyboard-area">
+                <div class="kb-grid">
+                    <button class="num-key">1</button>
+                    <button class="num-key">2</button>
+                    <button class="num-key">3</button>
+                    <button class="num-key">4</button>
+                    <button class="num-key">5</button>
+                    <button class="num-key">6</button>
+                    <button class="num-key">7</button>
+                    <button class="num-key">8</button>
+                    <button class="num-key">9</button>
+                    <button id="mode-btn" class="mode-normal">NUM</button>
+                    <button id="del-btn">DEL</button>
+                    <button id="fill-btn">FILL</button>
+                </div>
+            </div>
+
+            <div class="division" id="calculator-area">
+                <h3 class="div-title">Calculator</h3>
+                <div id="calc-display">0</div>
+                <div class="calc-hint"></div>
+            </div>
+        </div>
+    </div>
+    <script src="generator.js"></script>
+    <script src="logic.js"></script>
+</body>
+</html>

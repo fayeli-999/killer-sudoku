@@ -1,0 +1,283 @@
+/* ============================================================
+   KILLER SUDOKU - 全响应式等比例样式
+   ============================================================ */
+:root {
+    --bg-color: #f2f2f7;      
+    --panel-bg: #ffffff;      
+    --ios-blue: #007aff;      
+    --ios-blue-light: #e3f2fd; 
+    --ios-orange: #ff9500;    
+    --ios-red: #ff3b30;
+
+    /* 核心比例单位：基于视口最小边的 1% */
+    --u: min(1vw, 1vh); 
+
+    /* 动态计算尺寸 */
+    --line-thick: calc(0.4 * var(--u)) solid #000;  
+    --line-cage: calc(0.12 * var(--u)) dashed #666;  
+    --cell-size: calc(8.8 * var(--u));
+    --cage-inset: calc(0.25 * var(--u));             
+}
+
+* { 
+    box-sizing: border-box; 
+    -webkit-user-select: none; 
+    touch-action: none; 
+}
+
+body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, system-ui, sans-serif;
+    background-color: var(--bg-color);
+    height: 100vh; width: 100vw; 
+    overflow: hidden; 
+    /* 确保内容在超大屏或异常比例下依然居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container { 
+    display: flex; 
+    width: 98vw; height: 98vh; 
+    padding: calc(1.5 * var(--u)); 
+    gap: calc(2 * var(--u)); 
+}
+
+/* 左侧：数独棋盘面板 */
+#left-panel {
+    flex: 2;
+    background: var(--panel-bg); 
+    border-radius: calc(3 * var(--u));
+    display: flex; 
+    justify-content: center; 
+    align-items: center;     
+    padding: calc(2 * var(--u)); 
+    box-shadow: 0 calc(1 * var(--u)) calc(3 * var(--u)) rgba(0,0,0,0.05);
+}
+
+/* 右侧：功能控制面板 */
+#right-panel { 
+    flex: 1;
+    display: grid; 
+    /* 建议维持 2x2，如果 menu-area 按钮太拥挤，可改为 grid-template-columns: 1fr; */
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: 1.2fr 1fr; 
+    gap: calc(1.5 * var(--u)); 
+    min-width: 0;
+}
+
+
+#sudoku-board {
+    display: grid;
+    grid-template-columns: repeat(9, var(--cell-size));
+    grid-template-rows: repeat(9, var(--cell-size));
+    border: var(--line-thick);
+    background-color: #fff;
+    position: relative;
+}
+
+.cell {
+    position: relative; 
+    background: white;
+    box-shadow: inset 0 0 0 calc(0.05 * var(--u)) #e5e5ea;
+    cursor: pointer;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    container-type: size; 
+}
+
+/* 交互状态样式 */
+.cell.selected { background-color: var(--ios-blue-light); box-shadow: inset 0 0 0 calc(0.3 * var(--u)) var(--ios-blue); z-index: 5; }
+.cell.highlighted { background-color: #f2f8ff; } 
+.cell.drag-scanning { background-color: #f2f8ff !important; } 
+.cell.cage-complete { background-color: #f2f8ff !important; }
+.cell.same-number-highlight { background-color: #f2f8ff !important; }
+.cell.conflict-highlight { background-color: #ffcccc !important; color: var(--ios-red); }
+.cell.error-highlight { background-color: #ffd6d6 !important; }
+
+.cell.thick-right { border-right: var(--line-thick); }
+.cell.thick-bottom { border-bottom: var(--line-thick); }
+
+.cell-value {
+    font-size: 65cqi; 
+    color: var(--ios-blue);
+    z-index: 2;
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* 控制区块容器 */
+.division { 
+    background: var(--panel-bg); 
+    border-radius: calc(2 * var(--u)); 
+    padding: calc(1.2 * var(--u)); 
+    box-shadow: 0 calc(0.8 * var(--u)) calc(2.5 * var(--u)) rgba(0,0,0,0.05); 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%;
+}
+
+.div-title { 
+    margin: 0 0 calc(1 * var(--u)) 0; 
+    font-size: calc(1.2 * var(--u)); 
+    color: #8e8e93; 
+    text-transform: uppercase; 
+    font-weight: 600;
+}
+
+/* 数字键盘 */
+.kb-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(4, 1fr); 
+    gap: calc(0.8 * var(--u)); 
+    flex: 1;
+}
+
+.kb-grid button { 
+    width: 100%; height: 100%; 
+    border: none; 
+    border-radius: calc(1 * var(--u));
+    cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.num-key { 
+    background: white !important; 
+    box-shadow: 0 calc(0.2 * var(--u)) calc(0.8 * var(--u)) rgba(0,0,0,0.06); 
+    font-size: calc(2.2 * var(--u)); 
+    font-weight: 500;
+}
+
+#mode-btn.mode-normal { background: var(--ios-blue) !important; color: white; font-size: calc(1.5 * var(--u)); } 
+#mode-btn.mode-note { background: var(--ios-orange) !important; color: white; font-size: calc(1.5 * var(--u)); }   
+#del-btn, #fill-btn { background: #e5e5ea !important; color: #1c1c1e; font-size: calc(1.5 * var(--u)); }
+#check-btn.active { background-color: var(--ios-red) !important; color: white; font-size: calc(1.5 * var(--u)); }
+
+/* 杀手数独笼子线条 */
+.cage-line { 
+    position: absolute; 
+    top: var(--cage-inset); left: var(--cage-inset); 
+    right: var(--cage-inset); bottom: var(--cage-inset); 
+    pointer-events: none; z-index: 1; 
+}
+
+.cage-sum { 
+    position: absolute; 
+    top: calc(-0.3 * var(--u)); 
+    left: calc(-0.2 * var(--u)); 
+    font-size: calc(1.3 * var(--u)); 
+    font-weight: 400; 
+    background: white; 
+    padding: 0 calc(0.2 * var(--u)); 
+    line-height: 1.1; 
+    z-index: 10; 
+}
+
+.b-top { border-top: var(--line-cage); } 
+.b-bottom { border-bottom: var(--line-cage); }
+.b-left { border-left: var(--line-cage); } 
+.b-right { border-right: var(--line-cage); }
+
+/* 计算器/组合显示 */
+#calc-display { 
+    font-size: calc(2.8 * var(--u)); 
+    font-weight: 700; 
+    background: #f2f2f7; 
+    padding: calc(1 * var(--u)); 
+    border-radius: calc(1.2 * var(--u)); 
+    text-align: right;
+    margin-bottom: calc(1 * var(--u));
+}
+
+#combo-buttons-container { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    grid-template-rows: repeat(6, 1fr); 
+    gap: calc(0.5 * var(--u)); 
+    flex: 1; 
+}
+
+.combo-btn { 
+    background: #f9f9fb; 
+    border: calc(0.1 * var(--u)) solid #e5e5ea; 
+    border-radius: calc(0.6 * var(--u)); 
+    font-size: calc(1.1 * var(--u)); 
+    display: flex; justify-content: center; align-items: center; 
+    cursor: pointer; 
+}
+
+.combo-btn.disabled { background: #e5e5ea !important; color: #aeaeb2 !important; opacity: 0.6; }
+
+/* 笔记模式 */
+.notes-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 10cqi; 
+    pointer-events: none;
+    z-index: 1;
+}
+
+.note-digit {
+    display: flex; justify-content: center; align-items: center;
+    font-size: 20cqi; color: #8e8e93; line-height: 1;
+    visibility: hidden; 
+}
+
+.note-digit.visible { visibility: visible; }
+
+/* 针对 menu-area 的布局设置 */
+#menu-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: calc(1 * var(--u));
+}
+
+#timer {
+    font-size: calc(2.2 * var(--u));
+    font-weight: 700;
+    text-align: center;
+    color: #1c1c1e;
+    margin-bottom: calc(0.5 * var(--u));
+}
+
+/* 按钮容器：强制纵向排列 */
+.menu-buttons {
+    display: flex;
+    flex-direction: column; 
+    gap: calc(0.8 * var(--u));
+    flex: 1;
+}
+
+/* 按钮：每行一个，高度与字号同步 */
+.menu-buttons button {
+    width: 100%;
+    height: calc(4.2 * var(--u)); /* 比例锁定高度 */
+    border: none;
+    border-radius: calc(1 * var(--u));
+    background-color: #f2f2f7;
+    color: var(--ios-blue);
+    font-size: calc(1.4 * var(--u));
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 特殊按钮样式 */
+.menu-buttons button.primary {
+    background-color: var(--ios-blue);
+    color: white;
+}
+
+.menu-buttons button:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}
