@@ -56,6 +56,22 @@ html, body {
     gap: calc(1.5 * var(--u)); 
 }
 
+/* 全屏状态下的容器背景修正 */
+#game-container:fullscreen {
+    background-color: var(--bg-color);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game-container:-webkit-full-screen {
+    background-color: var(--bg-color);
+    width: 100vw;
+    height: 100vh;
+}
+
 /* 左侧：数独棋盘面板 */
 #left-panel {
     flex: 2;
