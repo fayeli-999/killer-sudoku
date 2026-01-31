@@ -1,3 +1,27 @@
+const fsBtn = document.getElementById('fullscreen-btn');
+const container = document.getElementById('game-container');
+
+fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        // 进入全屏
+        if (container.requestFullscreen) {
+            container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+            container.webkitRequestFullscreen(); // 针对 iPad Safari
+        }
+        fsBtn.textContent = "Exit Fullscreen";
+    } else {
+        // 退出全屏
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+        fsBtn.textContent = "Enter Fullscreen";
+    }
+});
+
+
 let cageComboStates = {};
 
 document.addEventListener('DOMContentLoaded', () => {
